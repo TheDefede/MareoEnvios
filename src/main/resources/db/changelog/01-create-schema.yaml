@@ -1,0 +1,114 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-create-customer
+      author: FedeMartinez
+      changes:
+        - createTable:
+            tableName: customer
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(255)
+              - column:
+                  name: last_name
+                  type: varchar(255)
+              - column:
+                  name: address
+                  type: varchar(255)
+              - column:
+                  name: city
+                  type: varchar(255)
+
+  - changeSet:
+      id: 2-create-shipping
+      author: FedeMartinez
+      changes:
+        - createTable:
+            tableName: shipping
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_shipping_customer
+                    references: customer(id)
+              - column:
+                  name: state
+                  type: varchar(255)
+              - column:
+                  name: send_date
+                  type: date
+              - column:
+                  name: arrive_date
+                  type: date
+              - column:
+                  name: priority
+                  type: int
+              - column:
+                  name: type
+                  type: varchar(255)
+
+  - changeSet:
+      id: 3-create-product
+      author: FedeMartinez
+      changes:
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+              - column:
+                  name: weight
+                  type: double
+
+  - changeSet:
+      id: 4-create-shipping-item
+      author: fede
+      changes:
+        - createTable:
+            tableName: shipping_item
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: shipping_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_shipping_item_shipping
+                    references: shipping(id)
+              - column:
+                  name: product_id
+                  type: int
+                  constraints:
+                    foreignKeyName: fk_shipping_item_product
+                    references: product(id)
+              - column:
+                  name: product_count
+                  type: int

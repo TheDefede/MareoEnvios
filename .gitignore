@@ -28,6 +28,7 @@
 hs_err_pid*
 
 ### Maven ###
+
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -42,3 +43,5 @@ buildNumber.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/maven,java
 
+assets/
+.idea/

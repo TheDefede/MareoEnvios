@@ -1,0 +1,118 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5-insert-customers
+      author: FedeMartinez
+      changes:
+        - insert:
+            tableName: customer
+            columns:
+              - column: {name: id, valueNumeric: 1}
+              - column: {name: first_name, value: 'Marcos'}
+              - column: {name: last_name, value: 'Gutierrez'}
+              - column: {name: address, value: 'la buena direccion 123'}
+              - column: {name: city, value: 'CABA'}
+        - insert:
+            tableName: customer
+            columns:
+              - column: {name: id, valueNumeric: 2}
+              - column: {name: first_name, value: 'Hernan'}
+              - column: {name: last_name, value: 'Toledo'}
+              - column: {name: address, value: 'falsa 456'}
+              - column: {name: city, value: 'CABA'}
+        - insert:
+            tableName: customer
+            columns:
+              - column: {name: id, valueNumeric: 3}
+              - column: {name: first_name, value: 'Silvina'}
+              - column: {name: last_name, value: 'Hernandez'}
+              - column: {name: address, value: 'Marcos Paz 997'}
+              - column: {name: city, value: 'Buenos Aires'}
+
+  - changeSet:
+      id: 6-insert-products
+      author: FedeMartinez
+      changes:
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 1}}, {column: {name: description, value: 'Maiz Pisingallo'}}, {column: {name: weight, valueNumeric: 1.1}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 2}}, {column: {name: description, value: 'Tornillos'}}, {column: {name: weight, valueNumeric: 2.2}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 3}}, {column: {name: description, value: 'Caja'}}, {column: {name: weight, valueNumeric: 1.1}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 4}}, {column: {name: description, value: 'Modem'}}, {column: {name: weight, valueNumeric: 0.9}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 5}}, {column: {name: description, value: 'Celular'}}, {column: {name: weight, valueNumeric: 0.3}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 6}}, {column: {name: description, value: 'Tablet'}}, {column: {name: weight, valueNumeric: 0.5}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 7}}, {column: {name: description, value: 'Petroleo'}}, {column: {name: weight, valueNumeric: 1.5}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 8}}, {column: {name: description, value: 'Tizas'}}, {column: {name: weight, valueNumeric: 0.6}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 9}}, {column: {name: description, value: 'Marcadores'}}, {column: {name: weight, valueNumeric: 0.8}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 10}}, {column: {name: description, value: 'Mesada'}}, {column: {name: weight, valueNumeric: 8.4}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 11}}, {column: {name: description, value: 'Marmol'}}, {column: {name: weight, valueNumeric: 13.5}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 12}}, {column: {name: description, value: 'Puerta'}}, {column: {name: weight, valueNumeric: 3.5}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 13}}, {column: {name: description, value: 'Cortina'}}, {column: {name: weight, valueNumeric: 1.3}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 14}}, {column: {name: description, value: 'Televisor'}}, {column: {name: weight, valueNumeric: 8.0}}]}
+        - insert: {tableName: product, columns: [{column: {name: id, valueNumeric: 15}}, {column: {name: description, value: 'Colchon'}}, {column: {name: weight, valueNumeric: 10.5}}]}
+
+  - changeSet:
+      id: 7-insert-shippings
+      author: FedeMartinez
+      changes:
+        - insert:
+            tableName: shipping
+            columns:
+              - column: {name: id, valueNumeric: 1}
+              - column: {name: customer_id, valueNumeric: 1}
+              - column: {name: state, value: 'Entregado'}
+              - column: {name: send_date, valueComputed: 'CURRENT_DATE - 5'}
+              - column: {name: arrive_date, valueComputed: 'CURRENT_DATE'}
+              - column: {name: priority, valueNumeric: 0}
+              - column: {name: type, value: 'PACKAGE'}
+        - insert:
+            tableName: shipping
+            columns:
+              - column: {name: id, valueNumeric: 2}
+              - column: {name: customer_id, valueNumeric: 2}
+              - column: {name: state, value: 'En camino'}
+              - column: {name: send_date, valueComputed: 'CURRENT_DATE - 5'}
+              - column: {name: priority, valueNumeric: 2}
+              - column: {name: type, value: 'PACKAGE'}
+        - insert:
+            tableName: shipping
+            columns:
+              - column: {name: id, valueNumeric: 3}
+              - column: {name: customer_id, valueNumeric: 1}
+              - column: {name: state, value: 'Inicial'}
+              - column: {name: send_date, valueComputed: 'CURRENT_DATE'}
+              - column: {name: priority, valueNumeric: 2}
+              - column: {name: type, value: 'PACKAGE'}
+        - insert:
+            tableName: shipping
+            columns:
+              - column: {name: id, valueNumeric: 4}
+              - column: {name: customer_id, valueNumeric: 3}
+              - column: {name: state, value: 'Cancelado'}
+              - column: {name: send_date, valueComputed: 'CURRENT_DATE - 4'}
+              - column: {name: priority, valueNumeric: 2}
+              - column: {name: type, value: 'PACKAGE'}
+
+  - changeSet:
+      id: 8-insert-shipping-items
+      author: FedeMartinez
+      changes:
+        - insert: {tableName: shipping_item, columns: [{column: {name: id, valueNumeric: 1}}, {column: {name: shipping_id, valueNumeric: 1}}, {column: {name: product_id, valueNumeric: 1}}, {column: {name: product_count, valueNumeric: 5}}]}
+        - insert: {tableName: shipping_item, columns: [{column: {name: id, valueNumeric: 2}}, {column: {name: shipping_id, valueNumeric: 1}}, {column: {name: product_id, valueNumeric: 2}}, {column: {name: product_count, valueNumeric: 2}}]}
+        - insert: {tableName: shipping_item, columns: [{column: {name: id, valueNumeric: 3}}, {column: {name: shipping_id, valueNumeric: 1}}, {column: {name: product_id, valueNumeric: 3}}, {column: {name: product_count, valueNumeric: 1}}]}
+        - insert: {tableName: shipping_item, columns: [{column: {name: id, valueNumeric: 4}}, {column: {name: shipping_id, valueNumeric: 2}}, {column: {name: product_id, valueNumeric: 4}}, {column: {name: product_count, valueNumeric: 6}}]}
+        - insert: {tableName: shipping_item, columns: [{column: {name: id, valueNumeric: 5}}, {column: {name: shipping_id, valueNumeric: 2}}, {column: {name: product_id, valueNumeric: 5}}, {column: {name: product_count, valueNumeric: 2}}]}
+        - insert: {tableName: shipping_item, columns: [{column: {name: id, valueNumeric: 6}}, {column: {name: shipping_id, valueNumeric: 2}}, {column: {name: product_id, valueNumeric: 6}}, {column: {name: product_count, valueNumeric: 2}}]}
+        - insert: {tableName: shipping_item, columns: [{column: {name: id, valueNumeric: 7}}, {column: {name: shipping_id, valueNumeric: 3}}, {column: {name: product_id, valueNumeric: 4}}, {column: {name: product_count, valueNumeric: 1}}]}
+        - insert: {tableName: shipping_item, columns: [{column: {name: id, valueNumeric: 8}}, {column: {name: shipping_id, valueNumeric: 3}}, {column: {name: product_id, valueNumeric: 5}}, {column: {name: product_count, valueNumeric: 2}}]}
+        - insert: {tableName: shipping_item, columns: [{column: {name: id, valueNumeric: 9}}, {column: {name: shipping_id, valueNumeric: 4}}, {column: {name: product_id, valueNumeric: 3}}, {column: {name: product_count, valueNumeric: 1}}]}
+
+  - changeSet:
+      id: 9-alter-sequences
+      author: FedeMartinez
+      changes:
+        - sql:
+            sql: "SELECT setval('customer_id_seq', (SELECT MAX(id) FROM customer));"
+        - sql:
+            sql: "SELECT setval('product_id_seq', (SELECT MAX(id) FROM product));"
+        - sql:
+            sql: "SELECT setval('shipping_id_seq', (SELECT MAX(id) FROM shipping));"
+        - sql:
+            sql: "SELECT setval('shipping_item_id_seq', (SELECT MAX(id) FROM shipping_item));"
