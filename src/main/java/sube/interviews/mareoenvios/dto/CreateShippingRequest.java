@@ -12,6 +12,7 @@ public class CreateShippingRequest {
     private String lastName;
     private String address;
     private String city;
+    private boolean partialFulfillment;
     @NotEmpty(message = "La solicitud de envío debe tener al menos un producto")
     private List<ItemDto> products;
 }

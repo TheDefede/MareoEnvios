@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sube.interviews.mareoenvios.dto.CreateShippingRequest;
 import sube.interviews.mareoenvios.entity.Customer;
-import sube.interviews.mareoenvios.strategy.CustomerResolutionStrategy;
+import sube.interviews.mareoenvios.entity.ShippingItem;
 
 import java.util.List;
 
@@ -12,18 +12,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ShippingService {
 
-    private final List<CustomerResolutionStrategy> customerStrategies;
+    private final ProductService productService;
+    private final CustomerService customerService;
 
     public void createShipping(CreateShippingRequest request) {
-        Customer customer = getCustomer(request);
-    }
+        Customer customer = customerService.get(request);
 
-    private Customer getCustomer(CreateShippingRequest request) {
-        return customerStrategies.stream()
-                .filter(strategy -> strategy.supports(request))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No se encontró una estrategia válida para el cliente"))
-                .resolve(request);
+        List<ShippingItem> validatedItems = productService.resolveShippingItems(request);
     }
 
 }
