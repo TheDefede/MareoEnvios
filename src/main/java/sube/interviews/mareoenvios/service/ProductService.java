@@ -7,6 +7,7 @@ import sube.interviews.mareoenvios.dto.CreateShippingRequest;
 import sube.interviews.mareoenvios.dto.ItemDto;
 import sube.interviews.mareoenvios.entity.Product;
 import sube.interviews.mareoenvios.entity.ShippingItem;
+import sube.interviews.mareoenvios.exception.BusinessRuleException;
 import sube.interviews.mareoenvios.exception.ResourceNotFoundException;
 import sube.interviews.mareoenvios.repository.ProductRepository;
 
@@ -32,6 +33,9 @@ public class ProductService {
                         log.info("Producto ID {} no encontrado. Se omite por política de cumplimiento parcial.", itemDto.getProductId());
                     }
             );
+        }
+        if (validItems.isEmpty()) {
+            throw new BusinessRuleException("No se encontraron productos válidos para crear el envío.");
         }
         return validItems;
     }
