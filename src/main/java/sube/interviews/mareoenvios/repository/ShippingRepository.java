@@ -1,4 +1,4 @@
-package sube.interviews.mareoenvios.controller;
+package sube.interviews.mareoenvios.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import sube.interviews.mareoenvios.entity.Shipping;

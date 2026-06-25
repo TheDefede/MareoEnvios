@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import sube.interviews.mareoenvios.enums.ShippingState;
+import sube.interviews.mareoenvios.enums.ShippingType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class Shipping {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    private String state;
+    private ShippingState state;
 
     @Column(name = "send_date")
     private LocalDate sendDate;
@@ -35,7 +37,7 @@ public class Shipping {
 
     private Integer priority;
 
-    private String type;
+    private ShippingType type;
 
     @OneToMany(mappedBy = "shipping", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
