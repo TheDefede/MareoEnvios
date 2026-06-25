@@ -22,6 +22,7 @@ public class NewCustomerStrategy implements CustomerResolutionStrategy{
 
     @Override
     public Customer resolve(CreateShippingRequest request) {
+        log.info("Creando cliente nuevo");
         Customer newCustomer = Customer.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())

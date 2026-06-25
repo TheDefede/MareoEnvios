@@ -15,13 +15,15 @@ public class ShippingService {
     private final List<CustomerResolutionStrategy> customerStrategies;
 
     public void createShipping(CreateShippingRequest request) {
-        // 1. Resolvemos el Cliente delegando en las Estrategias
-        Customer customer = customerStrategies.stream()
+        Customer customer = getCustomer(request);
+    }
+
+    private Customer getCustomer(CreateShippingRequest request) {
+        return customerStrategies.stream()
                 .filter(strategy -> strategy.supports(request))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No se encontró una estrategia válida para el cliente"))
                 .resolve(request);
     }
-
 
 }

@@ -37,6 +37,7 @@ public class Shipping {
 
     private Integer priority;
 
+    @Enumerated(EnumType.STRING)
     private ShippingType type;
 
     @OneToMany(mappedBy = "shipping", cascade = CascadeType.ALL, orphanRemoval = true)
