@@ -1,4 +1,4 @@
-package sube.interviews.mareoenvios.strategy;
+package sube.interviews.mareoenvios.strategy.customer;
 
 import sube.interviews.mareoenvios.dto.CreateShippingRequest;
 import sube.interviews.mareoenvios.entity.Customer;

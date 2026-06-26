@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import sube.interviews.mareoenvios.enums.ShippingState;
-import sube.interviews.mareoenvios.enums.ShippingType;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,9 +35,6 @@ public class Shipping {
     private LocalDate arriveDate;
 
     private Integer priority;
-
-    @Enumerated(EnumType.STRING)
-    private ShippingType type;
 
     @OneToMany(mappedBy = "shipping", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

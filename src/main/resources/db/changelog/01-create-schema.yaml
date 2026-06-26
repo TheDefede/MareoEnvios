@@ -58,9 +58,6 @@ databaseChangeLog:
               - column:
                   name: priority
                   type: int
-              - column:
-                  name: type
-                  type: varchar(255)
 
   - changeSet:
       id: 3-create-product
