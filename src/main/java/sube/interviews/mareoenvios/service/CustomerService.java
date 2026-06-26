@@ -1,25 +1,32 @@
 package sube.interviews.mareoenvios.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import sube.interviews.mareoenvios.dto.mapper.CustomerMapper;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
+import sube.interviews.mareoenvios.dto.response.CustomerResponseDto;
 import sube.interviews.mareoenvios.entity.Customer;
-import sube.interviews.mareoenvios.exception.BusinessRuleException;
-import sube.interviews.mareoenvios.strategy.customer.CustomerResolutionStrategy;
-
-import java.util.List;
+import sube.interviews.mareoenvios.exception.ResourceNotFoundException;
+import sube.interviews.mareoenvios.repository.CustomerRepository;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
 
-    private final List<CustomerResolutionStrategy> customerStrategies;
+    private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
 
-    public Customer get(CreateShippingRequest request) {
-        return customerStrategies.stream()
-                .filter(strategy -> strategy.supports(request))
-                .findFirst()
-                .orElseThrow(() -> new BusinessRuleException("No se encontró una estrategia válida para el cliente"))
-                .resolve(request);
+    public CustomerResponseDto getById(Integer id){
+        Customer customer = customerRepository.fetchById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Customer con ID:%d no encontrado", id)));
+
+        return customerMapper.toDto(customer);
+    }
+
+    public CustomerResponseDto save(CreateShippingRequest request){
+        Customer newCustomer = customerMapper.toEntity(request);
+
+        return customerMapper.toDto(customerRepository.save(newCustomer));
     }
 }

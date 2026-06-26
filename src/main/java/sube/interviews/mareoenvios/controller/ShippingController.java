@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.dto.response.ShippingResponseDto;
-import sube.interviews.mareoenvios.entity.Shipping;
 import sube.interviews.mareoenvios.service.ProcessService;
-import sube.interviews.mareoenvios.service.ShippingService;
 
 @RestController
 @RequestMapping("/shipping")

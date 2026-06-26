@@ -14,7 +14,7 @@ import java.util.List;
 @Order(1)
 @Slf4j
 public class CustomerBlockStrategy implements CustomerResolutionStrategy{
-    @Value("${chaos.customer}")
+    @Value("${chaos.customers}")
     private List<Integer> chaosCustomers;
 
     @Override
@@ -24,7 +24,7 @@ public class CustomerBlockStrategy implements CustomerResolutionStrategy{
 
     @Override
     public Customer resolve(CreateShippingRequest request) {
-        log.info("Customer {} is blocked for testing", request.getCustomerId());
-        throw new RetryableIntegrationException("Customer is blocked for testing");
+        log.info("Customer {} is blocked for testing purposes", request.getCustomerId());
+        throw new RetryableIntegrationException("Customer is blocked for testing purposes");
     }
 }

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import sube.interviews.mareoenvios.dto.mapper.ShippingMapper;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
+import sube.interviews.mareoenvios.dto.response.CustomerResponseDto;
 import sube.interviews.mareoenvios.dto.response.ShippingResponseDto;
 import sube.interviews.mareoenvios.entity.Customer;
 import sube.interviews.mareoenvios.entity.Shipping;
@@ -14,6 +15,7 @@ import sube.interviews.mareoenvios.enums.ShippingState;
 import sube.interviews.mareoenvios.exception.BusinessRuleException;
 import sube.interviews.mareoenvios.exception.RetryableIntegrationException;
 import sube.interviews.mareoenvios.repository.ShippingRepository;
+import sube.interviews.mareoenvios.strategy.customer.CustomerResolutionStrategy;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,13 +26,17 @@ import java.util.List;
 public class ShippingService {
 
     private final ProductService productService;
-    private final CustomerService customerService;
+    private final List<CustomerResolutionStrategy> customerStrategies;
     private final ShippingRepository shippingRepository;
     private final ShippingMapper shippingMapper;
 
     @Retry(name = "shippingRetry", fallbackMethod = "createShippingFallback")
     public ShippingResponseDto createShipping(CreateShippingRequest request) {
-        Customer customer = customerService.get(request);
+        Customer customer = customerStrategies.stream()
+                .filter(strategy -> strategy.supports(request))
+                .findFirst()
+                .orElseThrow(() -> new BusinessRuleException("No se encontró una estrategia válida para el cliente"))
+                .resolve(request);
 
         List<ShippingItem> validatedItems = productService.resolveShippingItems(request);
 
@@ -38,7 +44,7 @@ public class ShippingService {
                 .customer(customer)
                 .state(ShippingState.INICIAL)
                 .sendDate(LocalDate.now())
-                .priority(request.getPriority() != null ? request.getPriority() : 0)
+                .priority(request.getPriority())
                 .build();
 
         validatedItems.forEach(shipping::addItem);

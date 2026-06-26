@@ -1,6 +1,7 @@
 package sube.interviews.mareoenvios.dto.mapper;
 
 import org.springframework.stereotype.Component;
+import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.dto.response.CustomerResponseDto;
 import sube.interviews.mareoenvios.entity.Customer;
 
@@ -32,5 +33,14 @@ public class CustomerMapper {
         return entities.stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public Customer toEntity(CreateShippingRequest request){
+        return Customer.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .address(request.getAddress())
+                .city(request.getCity())
+                .build();
     }
 }
