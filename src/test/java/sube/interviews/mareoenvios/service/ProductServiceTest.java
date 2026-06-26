@@ -5,7 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import sube.interviews.mareoenvios.dto.CreateShippingRequest;
+import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.dto.ItemDto;
 import sube.interviews.mareoenvios.entity.Product;
 import sube.interviews.mareoenvios.entity.ShippingItem;

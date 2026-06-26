@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import sube.interviews.mareoenvios.dto.CreateShippingRequest;
+import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.entity.Customer;
 import sube.interviews.mareoenvios.exception.RetryableIntegrationException;
 

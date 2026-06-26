@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import sube.interviews.mareoenvios.repository.CustomerRepository;
-import sube.interviews.mareoenvios.dto.CreateShippingRequest;
+import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.entity.Customer;
 
 

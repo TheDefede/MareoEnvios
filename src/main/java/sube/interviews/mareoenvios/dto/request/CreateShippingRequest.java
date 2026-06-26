@@ -1,7 +1,8 @@
-package sube.interviews.mareoenvios.dto;
+package sube.interviews.mareoenvios.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+import sube.interviews.mareoenvios.dto.ItemDto;
 
 import java.util.List;
 

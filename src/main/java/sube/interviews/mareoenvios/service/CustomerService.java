@@ -2,7 +2,7 @@ package sube.interviews.mareoenvios.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sube.interviews.mareoenvios.dto.CreateShippingRequest;
+import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.entity.Customer;
 import sube.interviews.mareoenvios.exception.BusinessRuleException;
 import sube.interviews.mareoenvios.strategy.customer.CustomerResolutionStrategy;
