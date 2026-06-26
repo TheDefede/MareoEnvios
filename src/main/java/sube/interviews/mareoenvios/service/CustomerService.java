@@ -1,7 +1,8 @@
 package sube.interviews.mareoenvios.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import sube.interviews.mareoenvios.dto.mapper.CustomerMapper;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
@@ -9,6 +10,7 @@ import sube.interviews.mareoenvios.dto.response.CustomerResponseDto;
 import sube.interviews.mareoenvios.entity.Customer;
 import sube.interviews.mareoenvios.exception.ResourceNotFoundException;
 import sube.interviews.mareoenvios.repository.CustomerRepository;
+
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,11 @@ public class CustomerService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Customer con ID:%d no encontrado", id)));
 
         return customerMapper.toDto(customer);
+    }
+
+    public Page<CustomerResponseDto> getAllCustomers(Pageable pageable) {
+        Page<Customer> customerPage = customerRepository.findAll(pageable);
+        return customerPage.map(customerMapper::toDto);
     }
 
     public CustomerResponseDto save(CreateShippingRequest request){
