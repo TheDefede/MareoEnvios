@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
+import sube.interviews.mareoenvios.dto.response.ShippingResponseDto;
 import sube.interviews.mareoenvios.entity.Shipping;
+import sube.interviews.mareoenvios.service.ProcessService;
 import sube.interviews.mareoenvios.service.ShippingService;
 
 @RestController
@@ -20,12 +22,12 @@ import sube.interviews.mareoenvios.service.ShippingService;
 @Tag(name = "Shipping", description = "Operaciones de creación y gestión de envíos")
 public class ShippingController {
 
-    private final ShippingService shippingService;
+    private final ProcessService processService;
 
     @PostMapping("/create")
     @Operation(summary = "Crear solicitud de envío", description = "Crea un nuevo envío. Recibe un customerId existente o los datos para crear un cliente nuevo, junto con la lista de productos.")
-    public ResponseEntity<Shipping> createShipping(@Valid @RequestBody CreateShippingRequest request) {
-        shippingService.createShipping(request);
-        return new ResponseEntity<>(null, HttpStatus.CREATED);
+    public ResponseEntity<ShippingResponseDto> createShipping(@Valid @RequestBody CreateShippingRequest request) {
+        ShippingResponseDto response = processService.process(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

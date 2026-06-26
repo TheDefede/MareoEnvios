@@ -1,6 +1,7 @@
 package sube.interviews.mareoenvios.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import sube.interviews.mareoenvios.dto.ItemDto;
 
@@ -14,6 +15,7 @@ public class CreateShippingRequest {
     private String address;
     private String city;
     private boolean partialFulfillment;
+    @NotNull
     private Integer priority;
     @NotEmpty(message = "La solicitud de envío debe tener al menos un producto")
     private List<ItemDto> products;
