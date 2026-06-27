@@ -20,7 +20,7 @@ import sube.interviews.mareoenvios.exception.RetryableIntegrationException;
 import sube.interviews.mareoenvios.repository.ShippingRepository;
 import sube.interviews.mareoenvios.strategy.customer.CustomerResolutionStrategy;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -47,7 +47,7 @@ public class ShippingService {
         Shipping shipping = Shipping.builder()
                 .customer(customer)
                 .state(ShippingState.INICIAL)
-                .sendDate(LocalDate.now())
+                .sendDate(Instant.now())
                 .priority(request.getPriority())
                 .build();
 
@@ -66,7 +66,7 @@ public class ShippingService {
         return shippingMapper.toDto(shipping);
     }
 
-    public Page<ShippingResponseDto> getShippingsBySendDate(LocalDate sendDateFrom, LocalDate sendDateTo, Pageable pageable) {
+    public Page<ShippingResponseDto> getShippingsBySendDate(Instant sendDateFrom, Instant sendDateTo, Pageable pageable) {
         Page<Shipping> shippingPage = shippingRepository.findBySendDateBetween(sendDateFrom, sendDateTo, pageable);
         return shippingPage.map(shippingMapper::toDto);
     }

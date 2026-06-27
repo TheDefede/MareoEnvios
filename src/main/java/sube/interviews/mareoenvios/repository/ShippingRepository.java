@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import sube.interviews.mareoenvios.entity.Shipping;
 import sube.interviews.mareoenvios.enums.ShippingState;
 
-import java.time.LocalDate;
+import java.time.Instant;
 
 public interface ShippingRepository extends JpaRepository<Shipping, Integer> {
     Page<Shipping> findByState(ShippingState state, Pageable pageable);
-    Page<Shipping> findBySendDateBetween(LocalDate sendDateFrom, LocalDate sendDateTo, Pageable pageable);
+    Page<Shipping> findBySendDateBetween(Instant sendDateFrom, Instant sendDateTo, Pageable pageable);
 }

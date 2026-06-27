@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import sube.interviews.mareoenvios.enums.ShippingState;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,10 +29,10 @@ public class Shipping {
     private ShippingState state;
 
     @Column(name = "send_date")
-    private LocalDate sendDate;
+    private Instant sendDate;
 
     @Column(name = "arrive_date")
-    private LocalDate arriveDate;
+    private Instant arriveDate;
 
     private Integer priority;
 

@@ -51,10 +51,10 @@ databaseChangeLog:
                   type: varchar(255)
               - column:
                   name: send_date
-                  type: date
+                  type: timestamp
               - column:
                   name: arrive_date
-                  type: date
+                  type: timestamp
               - column:
                   name: priority
                   type: int

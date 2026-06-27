@@ -1,5 +1,7 @@
 package sube.interviews.mareoenvios.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -21,8 +23,12 @@ public class CacheConfig {
     private long ttlMinutes;
 
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer();
+    public CacheManager cacheManager(RedisConnectionFactory connectionFactory, ObjectMapper springObjectMapper) {
+        ObjectMapper cacheObjectMapper = springObjectMapper.copy();
+
+        cacheObjectMapper.registerModule(new JavaTimeModule());
+
+        GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer(cacheObjectMapper);
 
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(ttlMinutes))

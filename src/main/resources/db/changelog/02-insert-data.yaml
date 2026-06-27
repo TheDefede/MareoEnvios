@@ -58,8 +58,8 @@ databaseChangeLog:
               - column: {name: id, valueNumeric: 1}
               - column: {name: customer_id, valueNumeric: 1}
               - column: {name: state, value: 'Entregado'}
-              - column: {name: send_date, valueComputed: 'CURRENT_DATE - 5'}
-              - column: {name: arrive_date, valueComputed: 'CURRENT_DATE'}
+              - column: {name: send_date, valueComputed: 'CURRENT_TIMESTAMP - 5'}
+              - column: {name: arrive_date, valueComputed: 'CURRENT_TIMESTAMP'}
               - column: {name: priority, valueNumeric: 0}
         - insert:
             tableName: shipping
@@ -67,7 +67,7 @@ databaseChangeLog:
               - column: {name: id, valueNumeric: 2}
               - column: {name: customer_id, valueNumeric: 2}
               - column: {name: state, value: 'En camino'}
-              - column: {name: send_date, valueComputed: 'CURRENT_DATE - 5'}
+              - column: {name: send_date, valueComputed: 'CURRENT_TIMESTAMP - 5'}
               - column: {name: priority, valueNumeric: 2}
         - insert:
             tableName: shipping
@@ -75,7 +75,7 @@ databaseChangeLog:
               - column: {name: id, valueNumeric: 3}
               - column: {name: customer_id, valueNumeric: 1}
               - column: {name: state, value: 'Inicial'}
-              - column: {name: send_date, valueComputed: 'CURRENT_DATE'}
+              - column: {name: send_date, valueComputed: 'CURRENT_TIMESTAMP'}
               - column: {name: priority, valueNumeric: 2}
         - insert:
             tableName: shipping
@@ -83,7 +83,7 @@ databaseChangeLog:
               - column: {name: id, valueNumeric: 4}
               - column: {name: customer_id, valueNumeric: 3}
               - column: {name: state, value: 'Cancelado'}
-              - column: {name: send_date, valueComputed: 'CURRENT_DATE - 4'}
+              - column: {name: send_date, valueComputed: 'CURRENT_TIMESTAMP - 4'}
               - column: {name: priority, valueNumeric: 2}
 
   - changeSet:
