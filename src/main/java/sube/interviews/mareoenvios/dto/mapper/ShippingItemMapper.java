@@ -2,7 +2,7 @@ package sube.interviews.mareoenvios.dto.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import sube.interviews.mareoenvios.dto.response.ShippingItemResponseDto;
+import sube.interviews.mareoenvios.dto.ShippingItemDto;
 import sube.interviews.mareoenvios.entity.ShippingItem;
 
 import java.util.Collections;
@@ -16,18 +16,18 @@ public class ShippingItemMapper {
 
     private final ProductMapper productMapper;
 
-    public ShippingItemResponseDto toDto(ShippingItem entity) {
+    public ShippingItemDto toDto(ShippingItem entity) {
         if (Objects.isNull(entity)) {
             return null;
         }
-        return ShippingItemResponseDto.builder()
+        return ShippingItemDto.builder()
                 .id(entity.getId())
                 .product(productMapper.toDto(entity.getProduct()))
                 .productCount(entity.getProductCount())
                 .build();
     }
 
-    public List<ShippingItemResponseDto> toDtoList(List<ShippingItem> entities) {
+    public List<ShippingItemDto> toDtoList(List<ShippingItem> entities) {
         if (Objects.isNull(entities)) {
             return Collections.emptyList();
         }

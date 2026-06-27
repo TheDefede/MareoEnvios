@@ -1,11 +1,11 @@
-package sube.interviews.mareoenvios.dto.response;
+package sube.interviews.mareoenvios.dto;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class CustomerResponseDto {
+public class CustomerDto {
     private Integer id;
     private String firstName;
     private String lastName;

@@ -2,7 +2,9 @@ package sube.interviews.mareoenvios.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import sube.interviews.mareoenvios.dto.response.TopSendedResponseDto;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.dto.ItemDto;
 import sube.interviews.mareoenvios.entity.Product;
@@ -10,6 +12,7 @@ import sube.interviews.mareoenvios.entity.ShippingItem;
 import sube.interviews.mareoenvios.exception.BusinessRuleException;
 import sube.interviews.mareoenvios.exception.ResourceNotFoundException;
 import sube.interviews.mareoenvios.repository.ProductRepository;
+import sube.interviews.mareoenvios.repository.ShippingItemRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +23,7 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ShippingItemRepository shippingItemRepository;
 
     public List<ShippingItem> resolveShippingItems(CreateShippingRequest request) {
         List<ShippingItem> validItems = new ArrayList<>();
@@ -45,5 +49,9 @@ public class ProductService {
                 .product(product)
                 .productCount(itemDto.getCount())
                 .build();
+    }
+
+    public List<TopSendedResponseDto> getTopSendedProducts() {
+        return shippingItemRepository.findTopSendedProducts(PageRequest.of(0, 3));
     }
 }
