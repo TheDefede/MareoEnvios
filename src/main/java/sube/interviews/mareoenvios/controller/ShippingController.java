@@ -15,6 +15,7 @@ import sube.interviews.mareoenvios.dto.response.ShippingResponseDto;
 import sube.interviews.mareoenvios.service.ProcessService;
 import sube.interviews.mareoenvios.service.ShippingService;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/shipping")
@@ -41,8 +42,8 @@ public class ShippingController {
     @GetMapping("/info/{sendDateFrom}/{sendDateTo}")
     @Operation(summary = "Obtener envíos por rango de fecha paginado", description = "Busca envíos paginados cuyas fechas de envío estén en el rango.")
     public ResponseEntity<Page<ShippingResponseDto>> getShippingsBySendDate(
-            @PathVariable Instant sendDateFrom,
-            @PathVariable Instant sendDateTo,
+            @PathVariable LocalDate sendDateFrom,
+            @PathVariable LocalDate sendDateTo,
             @PageableDefault(size = 10, page = 0) Pageable pageable) {
         return ResponseEntity.ok(shippingService.getShippingsBySendDate(sendDateFrom, sendDateTo, pageable));
     }

@@ -21,6 +21,9 @@ import sube.interviews.mareoenvios.repository.ShippingRepository;
 import sube.interviews.mareoenvios.strategy.customer.CustomerResolutionStrategy;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -66,8 +69,10 @@ public class ShippingService {
         return shippingMapper.toDto(shipping);
     }
 
-    public Page<ShippingResponseDto> getShippingsBySendDate(Instant sendDateFrom, Instant sendDateTo, Pageable pageable) {
-        Page<Shipping> shippingPage = shippingRepository.findBySendDateBetween(sendDateFrom, sendDateTo, pageable);
+    public Page<ShippingResponseDto> getShippingsBySendDate(LocalDate sendDateFrom, LocalDate sendDateTo, Pageable pageable) {
+        Instant start = sendDateFrom.atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant end = sendDateTo.atTime(LocalTime.MAX).atZone(ZoneOffset.UTC).toInstant();
+        Page<Shipping> shippingPage = shippingRepository.findBySendDateBetween(start, end, pageable);
         return shippingPage.map(shippingMapper::toDto);
     }
 
