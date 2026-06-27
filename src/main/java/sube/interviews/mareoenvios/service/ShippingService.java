@@ -3,10 +3,12 @@ package sube.interviews.mareoenvios.service;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sube.interviews.mareoenvios.dto.mapper.ShippingMapper;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.dto.response.ShippingResponseDto;
@@ -14,9 +16,7 @@ import sube.interviews.mareoenvios.entity.Customer;
 import sube.interviews.mareoenvios.entity.Shipping;
 import sube.interviews.mareoenvios.entity.ShippingItem;
 import sube.interviews.mareoenvios.enums.ShippingState;
-import sube.interviews.mareoenvios.exception.BusinessRuleException;
-import sube.interviews.mareoenvios.exception.ResourceNotFoundException;
-import sube.interviews.mareoenvios.exception.RetryableIntegrationException;
+import sube.interviews.mareoenvios.exception.*;
 import sube.interviews.mareoenvios.repository.ShippingRepository;
 import sube.interviews.mareoenvios.strategy.customer.CustomerResolutionStrategy;
 
@@ -66,6 +66,8 @@ public class ShippingService {
         Shipping shipping = shippingRepository.findById(shippingId)
                 .orElseThrow(()-> new ResourceNotFoundException(String.format("Ship not found with ID: %d", shippingId)));
 
+        log.info("Find shipping with ID: {}", shippingId);
+
         return shippingMapper.toDto(shipping);
     }
 
@@ -86,11 +88,45 @@ public class ShippingService {
         return shippingPage.map(shippingMapper::toDto);
     }
 
-    public ShippingResponseDto createShippingFallback(CreateShippingRequest request, RetryableIntegrationException ex) {
+    @Transactional
+    @Retry(name = "shippingRetry", fallbackMethod = "transitionToFallback")
+    @CacheEvict(value = "shippings", key = "#shippingId")
+    public ShippingResponseDto transitionTo(Integer shippingId, ShippingState targetState) {
+        Shipping shipping = shippingRepository.findById(shippingId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Envío con ID: %d no encontrado", shippingId)));
+
+        if (!shipping.getState().canTransitionTo(targetState)) {
+            throw new InvalidStateTransitionException(
+                    String.format("No se puede transicionar el envío del estado [%s] al estado [%s]",
+                            shipping.getState().getDescription(), targetState.getDescription()));
+        }
+
+        shipping.setState(targetState);
+        if (targetState.equals(ShippingState.ENTREGADO)) {
+            shipping.setArriveDate(Instant.now());
+        }
+
+        Shipping savedShipping = this.save(shipping);
+
+        return shippingMapper.toDto(savedShipping);
+    }
+
+    public Shipping save(Shipping shipping){
+        return shippingRepository.save(shipping);
+    }
+
+    public ShippingResponseDto createShippingFallback(CreateShippingRequest request, Exception ex) {
         log.error("Todos los reintentos fallaron para la solicitud del cliente {}. Motivo: {}",
                 request.getCustomerId(), ex.getMessage());
 
-        throw new BusinessRuleException("No se pudo procesar el envío por problemas técnicos. Intente más tarde.");
+        throw new FailedDependencyException("No se pudo procesar el envío por problemas técnicos. Intente más tarde.");
+    }
+
+    public ShippingResponseDto transitionToFallback(Integer shippingId, ShippingState targetState, Exception ex) {
+        log.error("Todos los reintentos fallaron para la solicitud del envio {}. Motivo: {}",
+                shippingId, ex.getMessage());
+
+        throw new FailedDependencyException("No se pudo cambiar el estado del envío por problemas técnicos. Intente más tarde.");
     }
 
 }

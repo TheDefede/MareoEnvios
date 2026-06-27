@@ -24,6 +24,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
     }
 
+    @ExceptionHandler(FailedDependencyException.class)
+    public ResponseEntity<Map<String, Object>> handleFailedDependency(FailedDependencyException ex) {
+        return buildErrorResponse(HttpStatus.FAILED_DEPENDENCY, ex.getMessage());
+    }
+
     @ExceptionHandler(InvalidStateTransitionException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidState(InvalidStateTransitionException ex) {
         return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());

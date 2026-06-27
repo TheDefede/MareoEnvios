@@ -12,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.dto.response.ShippingResponseDto;
+import sube.interviews.mareoenvios.enums.ShippingState;
 import sube.interviews.mareoenvios.service.ProcessService;
 import sube.interviews.mareoenvios.service.ShippingService;
-import java.time.Instant;
 import java.time.LocalDate;
 
 @RestController
@@ -54,5 +54,29 @@ public class ShippingController {
             @PathVariable String state,
             @PageableDefault(size = 10, page = 0) Pageable pageable) {
         return ResponseEntity.ok(shippingService.getShippingsByState(state, pageable));
+    }
+
+    @PostMapping("/transition/sendToMail/{shippingId}")
+    @Operation(summary = "Entregar envío al correo", description = "Cambia el estado a 'Entregado al correo'.")
+    public ResponseEntity<ShippingResponseDto> sendToMail(@PathVariable Integer shippingId) {
+        return ResponseEntity.ok(shippingService.transitionTo(shippingId, ShippingState.ENTREGADO_CORREO));
+    }
+
+    @PostMapping("/transition/inTravel/{shippingId}")
+    @Operation(summary = "Poner envío en camino", description = "Cambia el estado a 'En camino'.")
+    public ResponseEntity<ShippingResponseDto> inTravel(@PathVariable Integer shippingId) {
+        return ResponseEntity.ok(shippingService.transitionTo(shippingId, ShippingState.EN_CAMINO));
+    }
+
+    @PostMapping("/transition/delivered/{shippingId}")
+    @Operation(summary = "Marcar envío como entregado", description = "Cambia el estado a 'Entregado' y registra fecha de arribo.")
+    public ResponseEntity<ShippingResponseDto> delivered(@PathVariable Integer shippingId) {
+        return ResponseEntity.ok(shippingService.transitionTo(shippingId, ShippingState.ENTREGADO));
+    }
+
+    @PostMapping("/transition/cancelled/{shippingId}")
+    @Operation(summary = "Cancelar envío", description = "Cambia el estado del envío a 'Cancelado'.")
+    public ResponseEntity<ShippingResponseDto> cancelled(@PathVariable Integer shippingId) {
+        return ResponseEntity.ok(shippingService.transitionTo(shippingId, ShippingState.CANCELADO));
     }
 }

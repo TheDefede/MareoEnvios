@@ -1,5 +1,6 @@
 package sube.interviews.mareoenvios.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,9 +25,16 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory, ObjectMapper springObjectMapper) {
+
         ObjectMapper cacheObjectMapper = springObjectMapper.copy();
 
         cacheObjectMapper.registerModule(new JavaTimeModule());
+
+        cacheObjectMapper.activateDefaultTyping(
+                cacheObjectMapper.getPolymorphicTypeValidator(),
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+        );
 
         GenericJackson2JsonRedisSerializer jsonSerializer = new GenericJackson2JsonRedisSerializer(cacheObjectMapper);
 

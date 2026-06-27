@@ -103,6 +103,7 @@ databaseChangeLog:
   - changeSet:
       id: 9-alter-sequences
       author: FedeMartinez
+      dbms: postgresql
       changes:
         - sql:
             sql: "SELECT setval('customer_id_seq', (SELECT MAX(id) FROM customer));"

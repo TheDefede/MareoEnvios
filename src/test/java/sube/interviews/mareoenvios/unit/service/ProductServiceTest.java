@@ -1,4 +1,4 @@
-package sube.interviews.mareoenvios.service;
+package sube.interviews.mareoenvios.unit.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +11,7 @@ import sube.interviews.mareoenvios.entity.Product;
 import sube.interviews.mareoenvios.entity.ShippingItem;
 import sube.interviews.mareoenvios.exception.ResourceNotFoundException;
 import sube.interviews.mareoenvios.repository.ProductRepository;
+import sube.interviews.mareoenvios.service.ProductService;
 
 import java.util.Arrays;
 import java.util.List;
