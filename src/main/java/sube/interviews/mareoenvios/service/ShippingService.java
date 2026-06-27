@@ -56,7 +56,7 @@ public class ShippingService {
 
         validatedItems.forEach(shipping::addItem);
 
-        Shipping savedShipping = shippingRepository.save(shipping);
+        Shipping savedShipping = this.save(shipping);
 
         return shippingMapper.toDto(savedShipping);
     }
@@ -115,18 +115,11 @@ public class ShippingService {
         return shippingRepository.save(shipping);
     }
 
-    public ShippingResponseDto createShippingFallback(CreateShippingRequest request, Exception ex) {
+    public ShippingResponseDto createShippingFallback(CreateShippingRequest request, RetryableIntegrationException ex) {
         log.error("Todos los reintentos fallaron para la solicitud del cliente {}. Motivo: {}",
                 request.getCustomerId(), ex.getMessage());
 
         throw new FailedDependencyException("No se pudo procesar el envío por problemas técnicos. Intente más tarde.");
-    }
-
-    public ShippingResponseDto transitionToFallback(Integer shippingId, ShippingState targetState, Exception ex) {
-        log.error("Todos los reintentos fallaron para la solicitud del envio {}. Motivo: {}",
-                shippingId, ex.getMessage());
-
-        throw new FailedDependencyException("No se pudo cambiar el estado del envío por problemas técnicos. Intente más tarde.");
     }
 
 }

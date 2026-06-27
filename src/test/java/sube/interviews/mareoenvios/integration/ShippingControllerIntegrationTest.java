@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import sube.interviews.mareoenvios.entity.Shipping;
 import sube.interviews.mareoenvios.enums.ShippingState;
+import sube.interviews.mareoenvios.exception.RetryableIntegrationException;
 import sube.interviews.mareoenvios.service.ShippingService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -49,19 +50,63 @@ class ShippingControllerIntegrationTest {
     }
 
     @Test
-    void testTransitionToSendToMail_ShouldFailAfter3AttemptsAndReturn424() throws Exception {
-        Integer shippingId = 3;
-
-        doThrow(new CannotAcquireLockException("Simulated permanent lock issue"))
+    void testCreateShipping_ShouldRetryAndFallbackOnRetryableException() throws Exception {
+        doThrow(new RetryableIntegrationException("Error de integración"))
                 .when(shippingService).save(any(Shipping.class));
 
-        mockMvc.perform(post("/shipping/transition/sendToMail/{shippingId}", shippingId)
-                        .contentType(MediaType.APPLICATION_JSON))
+        String jsonPayload = """
+                {
+                  "customerId": 1,
+                  "priority": 1,
+                  "products": [
+                    {
+                      "productId": 1,
+                      "productCount": 2
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(post("/shipping/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
                 .andExpect(status().isFailedDependency())
                 .andExpect(jsonPath("$.status").value(424))
-                .andExpect(jsonPath("$.message").value("No se pudo cambiar el estado del envío por problemas técnicos. Intente más tarde."));
+                .andExpect(jsonPath("$.message").value("No se pudo procesar el envío por problemas técnicos. Intente más tarde."));
 
         verify(shippingService, times(3)).save(any(Shipping.class));
-        verify(shippingService, times(1)).transitionToFallback(eq(shippingId), eq(ShippingState.ENTREGADO_CORREO), any());
+
+        verify(shippingService, times(1)).createShippingFallback(any(), any());
     }
+
+    @Test
+    void testCreateShipping_ShouldNotRetryOnNonConfiguredException() throws Exception {
+        doThrow(new NullPointerException("Simulated non-retryable exception"))
+                .when(shippingService).save(any(Shipping.class));
+
+        String jsonPayload = """
+                {
+                  "customerId": 1,
+                  "priority": 1,
+                  "products": [
+                    {
+                      "productId": 1,
+                      "productCount": 2
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(post("/shipping/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.message").value("Simulated non-retryable exception"));
+
+        verify(shippingService, times(1)).save(any(Shipping.class));
+
+        verify(shippingService, never()).createShippingFallback(any(), any());
+    }
+
 }
