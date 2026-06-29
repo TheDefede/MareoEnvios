@@ -1,71 +1,77 @@
-# Mareo Envíos
-
-Marcos junto a sus amigos, cansados de las malas gestiones de las empresas de correo, se plantearon armar una empresa de envíos de mercadería a todo el país gestionadas digitalmente. Debido a la urgencia de salida al mercado, te contactaron para que le entregues WebService para que ellos puedan evolucionar con facilidad.
-
-## Requerimientos técnicos
-
-* __Arquitectura WS__: RESTful Json
-* __Lenguaje__: Java 17
-* __Formato proyecto__: maven
-* __Framework__: Spring Boot
-* __Base de datos__: PostgreSQL
-
-* Incluir Dockerfile de 2 etapas para buildear con Docker
-* Preparar todo el stack con docker-compose (IE: app + db)
-* Utilizar archivo de variables de entorno
-* Escribir tests unitarios y de integración
-* Documentar la API con Swagger
-* Opcional agregar métricas (jvm, http, hikari, system)
-
-## Requerimientos funcionales
-
-* Poder obtener información del comprador 
-* Obtener listado de compradores 
-* Poder obtener información del envío y detalle de productos comprados.
-* Obtener listado de envíos por rango de fecha de envio con el detalle productos
-* Listado de envíos por estado
-* Poder cambiar el estado del envío siguiendo las siguientes reglas de negocio:
-  * El estado inicial es “Inicial” y solo se puede transicionar a “Entregado al correo” y a “Cancelado”
-  * El estado “Entregado al correo” solo se puede transicionar a “En camino” y a “Cancelado”
-  * El estado “En camino” solo se puede transicionar a “Entregado”
-  * Los estados “Entregado” y “Cancelado” son estados finales y no se pueden transicionar.
-* Obtener un listado con la descripción y cantidad de los 3 productos más solicitados para su envío
-* Creación de solicitud de envio (considerar nuevos compradores)
-
-## Firmas a utilizar
-
-* /customer/info/{customerId}
-* /customer/info
-* /shipping/info/{shippingId}
-* /shipping/info/{sendDateFrom}/{sendDateTo}
-* /shipping/info/state/{state}
-* Firmas de transiciones:
-  * /shipping/transition/sendToMail/{shippingId}
-  * /shipping/transition/inTravel/{shippingId}
-  * /shipping/transition/delivered/{shippingId}
-  * /shipping/transition/cancelled/{shippingId}
-* /reports/topSended
-* /shipping/create
-
-## Aclaraciones
-
-* Se dejan algunos datos de ejemplo para que sea más sencillo realizar las pruebas. 
-* Considerar que el volumen de datos puede crecer considerablemente
-* Es necesario la creación del esquema y tablas
-* Implementar manejo de errores en las respuestas de las distintas firmas.
-* Utilizar cache para optimizar consultas db (redis)
-* Implementar lógica de reintentos en la transición de estados y creación de solicitud de envio (hasta 3 reintentos)
-* Se incluye _pom.xml_ y codigo minimo para inicializar el proyecto.
-* Plus: reemplazar schema.sql y data.sql utilizando changelogs de Liquibase
-
-### Esquema
-
-![Esquema base de datos](assets/schema.png "Esquema")
-
-### Flujo estados
-
-![Flujo estados](assets/status-flow.png "Flujo")
-
-### Entrega
-
-Se deberá entregar enlace al repositorio de GitHub o Gitlab donde se hizo el desarrollo por correo electrónico. Se tendrá en cuenta también la documentación hecha en el README y la manera en la que se trabajaron los commits
+# 📦 Mareo Envíos - API REST
+WebService desarrollado en **Java 17** y **Spring Boot 3** para la gestión, seguimiento y reportes de envíos de mercadería para la empresa **Mareo Envíos**.
+---
+## 📋 Requisitos Previos
+*   Java 17 (si se ejecuta localmente)
+*   Docker y Docker Compose
+*   Maven 3.x (o utilizar el `./mvnw` incluido)
+---
+## 🛠️ Cómo Ejecutar el Proyecto
+### Opción A: Ejecución con Docker Compose (Recomendado)
+1.  Asegúrate de que el archivo `.env` en la raíz tenga las credenciales de base de datos deseadas.
+2.  Compila y levanta todo el stack (Aplicación + PostgreSQL + Redis) ejecutando en la raíz del proyecto:
+    ```bash
+    docker compose up --build
+    ```
+3.  La aplicación estará disponible y lista en `http://localhost:8080`.
+### Opción B: Ejecución Local en Desarrollo (IDE)
+1.  Levanta únicamente la base de datos y Redis mediante Docker:
+    ```bash
+    docker compose up db redis
+    ```
+2.  Ejecuta la aplicación desde tu IDE o consola usando el comando:
+    ```bash
+    ./mvnw spring-boot:run
+    ```
+---
+## 🧪 Ejecución de Pruebas (Tests)
+El proyecto incluye un set completo de pruebas unitarias aisladas y pruebas de integración sobre base de datos H2 en memoria.
+Para correr todos los tests del proyecto:
+```bash
+./mvnw clean test
+```
+---
+## 📖 Documentación de la API (Swagger UI)
+Con la aplicación en ejecución, puedes acceder a la consola interactiva de Swagger para probar los endpoints y visualizar los esquemas JSON de peticiones y respuestas:
+🔗 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+---
+## 🔌 Ejemplos de Peticiones (Endpoints Principales)
+### 1. Crear Solicitud de Envío (Cliente Existente)
+*   **POST** `/shipping/create`
+*   **Body:**
+```json
+{
+  "customerId": 1,
+  "priority": 1,
+  "partialFulfillment": false,
+  "products": [
+    {
+      "productId": 1,
+      "count": 3
+    }
+  ]
+}
+```
+### 2. Crear Solicitud de Envío (Cliente Nuevo)
+*   **POST** `/shipping/create`
+*   **Body:**
+```json
+{
+  "customerId": null,
+  "firstName": "Gaston",
+  "lastName": "Gomez",
+  "address": "Calle San Martin 123",
+  "city": "Mendoza",
+  "priority": 1,
+  "products": [
+    {
+      "productId": 2,
+      "count": 1
+    }
+  ]
+}
+```
+### 3. Transicionar Estado (Ej: En camino)
+*   **POST** `/shipping/transition/inTravel/{shippingId}`
+### 4. Obtener Reporte de Productos más Solicitados (Top Dinámico)
+*   **GET** `/reports/topSended?limit=3`
