@@ -22,7 +22,7 @@ public class CustomerAlreadyExistsStrategy implements CustomerResolutionStrategy
 
     @Override
     public Customer resolve(CreateShippingRequest request) {
-        log.info("Buscando cliente con ID: {}", request.getCustomerId());
+        log.info("Estrategia Seleccionada: Cliente existente ID: {}", request.getCustomerId());
         return customerRepository.fetchById(request.getCustomerId())
                 .orElseThrow(()->new ResourceNotFoundException(String.format("Cliente con ID: %d no encontrado", request.getCustomerId())));
     }

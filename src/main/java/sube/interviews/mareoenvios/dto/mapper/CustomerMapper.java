@@ -26,7 +26,6 @@ public class CustomerMapper {
                 .city(entity.getCity())
                 .build();
     }
-
     public List<CustomerDto> toDtoList(List<Customer> entities) {
         if (Objects.isNull(entities)) {
             return Collections.emptyList();
@@ -36,28 +35,72 @@ public class CustomerMapper {
                 .collect(Collectors.toList());
     }
 
-    public Customer toEntity(CreateShippingRequest request){
-        if (Objects.isNull(request)) {
-            throw new BusinessRuleException("La entidad no puede ser null.");
+    public Customer toEntity(CustomerDto dto) {
+        if (Objects.isNull(dto)) {
+            return null;
         }
 
-        if (isInvalid(request.getFirstName()) ||
-                isInvalid(request.getLastName()) ||
-                isInvalid(request.getAddress()) ||
-                isInvalid(request.getCity())) {
+        if (isInvalid(dto.getFirstName()) ||
+                isInvalid(dto.getLastName()) ||
+                isInvalid(dto.getAddress()) ||
+                isInvalid(dto.getCity())) {
             throw new BusinessRuleException(
-                    "Los datos del comprador (nombre, apellido, dirección y ciudad) son obligatorios para registrar un nuevo cliente.");
+                    "Los datos del comprador (nombre, apellido, dirección y ciudad) son obligatorios.");
         }
-
         return Customer.builder()
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .address(dto.getAddress())
+                .city(dto.getCity())
+                .build();
+    }
+
+    public Customer toEntity(CreateShippingRequest request) {
+        if (Objects.isNull(request)) {
+            return null;
+        }
+        CustomerDto tempDto = CustomerDto.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .address(request.getAddress())
                 .city(request.getCity())
                 .build();
+
+        return toEntity(tempDto);
+    }
+
+    public void updateEntity(Customer customer, CustomerDto dto) {
+        if (Objects.isNull(dto)) {
+            return;
+        }
+
+        if (Objects.nonNull(dto.getFirstName())) {
+            if (dto.getFirstName().isBlank()) {
+                throw new BusinessRuleException("El nombre del comprador no puede estar vacío.");
+            }
+            customer.setFirstName(dto.getFirstName());
+        }
+        if (Objects.nonNull(dto.getLastName())) {
+            if (dto.getLastName().isBlank()) {
+                throw new BusinessRuleException("El apellido del comprador no puede estar vacío.");
+            }
+            customer.setLastName(dto.getLastName());
+        }
+        if (Objects.nonNull(dto.getAddress())) {
+            if (dto.getAddress().isBlank()) {
+                throw new BusinessRuleException("La dirección del comprador no puede estar vacía.");
+            }
+            customer.setAddress(dto.getAddress());
+        }
+        if (Objects.nonNull(dto.getCity())) {
+            if (dto.getCity().isBlank()) {
+                throw new BusinessRuleException("La ciudad del comprador no puede estar vacía.");
+            }
+            customer.setCity(dto.getCity());
+        }
     }
 
     private boolean isInvalid(String str) {
-        return Objects.isNull(str) || str.trim().isEmpty();
+        return Objects.isNull(str) || str.isBlank();
     }
 }

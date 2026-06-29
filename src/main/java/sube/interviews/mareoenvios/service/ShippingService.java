@@ -39,6 +39,7 @@ public class ShippingService {
 
     @Retry(name = "shippingRetry", fallbackMethod = "createShippingFallback")
     public ShippingResponseDto createShipping(CreateShippingRequest request) {
+        log.info("Iniciando creación de envío para el cliente ID: {}", request.getCustomerId());
         Customer customer = customerStrategies.stream()
                 .filter(strategy -> strategy.supports(request))
                 .findFirst()
@@ -57,6 +58,9 @@ public class ShippingService {
         validatedItems.forEach(shipping::addItem);
 
         Shipping savedShipping = this.save(shipping);
+
+        log.info("Envío creado exitosamente con ID: {} para el cliente ID: {}",
+                savedShipping.getId(), savedShipping.getCustomer().getId());
 
         return shippingMapper.toDto(savedShipping);
     }
@@ -92,6 +96,8 @@ public class ShippingService {
     @Retry(name = "shippingRetry", fallbackMethod = "transitionToFallback")
     @CacheEvict(value = "shippings", key = "#shippingId")
     public ShippingResponseDto transitionTo(Integer shippingId, ShippingState targetState) {
+        log.info("Iniciando transición del envío ID: {} hacia el estado: {}", shippingId, targetState.name());
+
         Shipping shipping = shippingRepository.findById(shippingId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Envío con ID: %d no encontrado", shippingId)));
 
@@ -107,6 +113,8 @@ public class ShippingService {
         }
 
         Shipping savedShipping = this.save(shipping);
+
+        log.info("Transición exitosa del envío ID: {} al estado: {}", shippingId, targetState.name());
 
         return shippingMapper.toDto(savedShipping);
     }

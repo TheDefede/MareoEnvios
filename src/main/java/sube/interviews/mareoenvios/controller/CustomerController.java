@@ -3,9 +3,9 @@ package sube.interviews.mareoenvios.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sube.interviews.mareoenvios.dto.CustomerDto;
@@ -27,8 +27,21 @@ public class CustomerController {
 
     @GetMapping("/info")
     @Operation(summary = "Obtener listado paginado de compradores", description = "Retorna una página de compradores. Parámetros de URL opcionales: ?page=0&size=10")
-    public ResponseEntity<Page<CustomerDto>> getAllCustomers(
-            @PageableDefault(size = 10, page = 0) Pageable pageable) {
+    public ResponseEntity<Page<CustomerDto>> getAllCustomers(@ParameterObject Pageable pageable) {
         return ResponseEntity.ok(customerService.getAllCustomers(pageable));
+    }
+
+    @PostMapping("/create")
+    @Operation(summary = "Crear un nuevo comprador", description = "Crea un nuevo comprador en el sistema.")
+    public ResponseEntity<CustomerDto> createCustomer(@RequestBody CustomerDto customerDto) {
+        return ResponseEntity.ok(customerService.createCustomer(customerDto));
+    }
+
+    @PutMapping("/update/{customerId}")
+    @Operation(summary = "Modificar un comprador existente", description = "Actualiza los datos de un comprador y invalida su caché en Redis.")
+    public ResponseEntity<CustomerDto> updateCustomer(
+            @PathVariable Integer customerId,
+            @RequestBody CustomerDto customerDto) {
+        return ResponseEntity.ok(customerService.updateCustomer(customerId, customerDto));
     }
 }

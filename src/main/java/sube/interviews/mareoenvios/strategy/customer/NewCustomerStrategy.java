@@ -24,7 +24,7 @@ public class NewCustomerStrategy implements CustomerResolutionStrategy{
 
     @Override
     public Customer resolve(CreateShippingRequest request) {
-        log.info("Creando cliente nuevo");
+        log.info("Estrategia Seleccionada: Registrando nuevo cliente: {} {}", request.getFirstName(), request.getLastName());
         return customerRepository.save(customerMapper.toEntity(request));
     }
 }
