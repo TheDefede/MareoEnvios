@@ -1,12 +1,9 @@
 package sube.interviews.mareoenvios.unit.enums;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.Test;
 import sube.interviews.mareoenvios.enums.ShippingState;
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 public class ShippingStateTest {
 
     @Test
