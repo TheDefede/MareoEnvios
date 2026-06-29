@@ -47,7 +47,7 @@ public class ProductService {
     private static ShippingItem createShippingItem(ItemDto itemDto, Product product) {
         return ShippingItem.builder()
                 .product(product)
-                .productCount(itemDto.getCount())
+                .productCount(itemDto.getProductCount())
                 .build();
     }
 

@@ -11,5 +11,5 @@ public class ItemDto {
     private Integer productId;
 
     @NotNull(message = "La cantidad no puede ser nula")
-    private Integer count;
+    private Integer productCount;
 }

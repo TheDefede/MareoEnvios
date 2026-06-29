@@ -291,4 +291,138 @@ class ShippingControllerIntegrationTest {
         verify(shippingService, times(2)).getShippingInfo(shippingId);
     }
 
+    @Test
+    void testCreateShipping_WithNewCustomer_RegistersCustomerAndCreatesShipping() throws Exception {
+        String jsonPayload = """
+                {
+                  "customerId": null,
+                  "firstName": "Gaston",
+                  "lastName": "Gomez",
+                  "address": "San Martin 555",
+                  "city": "Mendoza",
+                  "priority": 1,
+                  "products": [
+                    {
+                      "productId": 1,
+                      "productCount": 1
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(post("/shipping/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.customer.id").value(4))
+                .andExpect(jsonPath("$.customer.firstName").value("Gaston"))
+                .andExpect(jsonPath("$.customer.address").value("San Martin 555"))
+                .andExpect(jsonPath("$.items.length()").value(1));
+    }
+
+    @Test
+    void testCreateShipping_WithExistingCustomer_ReturnsCreatedShipping() throws Exception {
+        String jsonPayload = """
+                {
+                  "customerId": 1,
+                  "priority": 0,
+                  "partialFulfillment": false,
+                  "products": [
+                    {
+                      "productId": 2,
+                      "productCount": 1
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(post("/shipping/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.customer.id").value(1))
+                .andExpect(jsonPath("$.items.length()").value(1))
+                .andExpect(jsonPath("$.items[0].product.id").value(2))
+                .andExpect(jsonPath("$.items[0].productCount").value(1));
+    }
+
+    @Test
+    void testCreateShipping_CustomerNotFound_Returns404NotFound() throws Exception {
+        String jsonPayload = """
+                {
+                  "customerId": 999,
+                  "priority": 1,
+                  "products": [
+                    {
+                      "productId": 1,
+                      "productCount": 2
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(post("/shipping/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").value("Cliente con ID: 999 no encontrado"));
+    }
+
+    @Test
+    void testCreateShipping_ProductNotFound_NoPartialFulfillment_Returns404NotFound() throws Exception {
+        String jsonPayload = """
+                {
+                  "customerId": 1,
+                  "priority": 1,
+                  "partialFulfillment": false,
+                  "products": [
+                    {
+                      "productId": 999,
+                      "productCount": 1
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(post("/shipping/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.message").value("Producto no encontrado con ID: 999. Envío cancelado."));
+    }
+
+    @Test
+    void testCreateShipping_ProductNotFound_WithPartialFulfillment_ReturnsOkWithExistingProducts() throws Exception {
+        String jsonPayload = """
+                {
+                  "customerId": 1,
+                  "priority": 1,
+                  "partialFulfillment": true,
+                  "products": [
+                    {
+                      "productId": 1,
+                      "productCount": 2
+                    },
+                    {
+                      "productId": 999,
+                      "productCount": 1
+                    }
+                  ]
+                }
+                """;
+
+        mockMvc.perform(post("/shipping/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonPayload))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.items.length()").value(1))
+                .andExpect(jsonPath("$.items[0].product.id").value(1))
+                .andExpect(jsonPath("$.items[0].productCount").value(2));
+    }
+
 }

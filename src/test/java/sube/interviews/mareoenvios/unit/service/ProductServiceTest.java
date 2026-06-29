@@ -38,10 +38,10 @@ class ProductServiceTest {
         when(request.getProducts()).thenReturn(Arrays.asList(item1, item2));
 
         when(item1.getProductId()).thenReturn(101);
-        when(item1.getCount()).thenReturn(2);
+        when(item1.getProductCount()).thenReturn(2);
         
         when(item2.getProductId()).thenReturn(102);
-        when(item2.getCount()).thenReturn(1);
+        when(item2.getProductCount()).thenReturn(1);
 
         Product product1 = new Product();
         Product product2 = new Product();
@@ -65,7 +65,7 @@ class ProductServiceTest {
         when(request.isPartialFulfillment()).thenReturn(true);
 
         when(item1.getProductId()).thenReturn(101);
-        when(item1.getCount()).thenReturn(2);
+        when(item1.getProductCount()).thenReturn(2);
         
         when(item2.getProductId()).thenReturn(999);
         
