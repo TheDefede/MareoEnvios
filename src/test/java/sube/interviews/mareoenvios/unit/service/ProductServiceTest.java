@@ -7,13 +7,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.dto.ItemDto;
+import sube.interviews.mareoenvios.dto.response.TopSendedResponseDto;
 import sube.interviews.mareoenvios.entity.Product;
 import sube.interviews.mareoenvios.entity.ShippingItem;
 import sube.interviews.mareoenvios.exception.ResourceNotFoundException;
 import sube.interviews.mareoenvios.repository.ProductRepository;
+import sube.interviews.mareoenvios.repository.ShippingItemRepository;
 import sube.interviews.mareoenvios.service.ProductService;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +25,9 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
+
+    @Mock
+    private ShippingItemRepository shippingItemRepository;
 
     @Mock
     private ProductRepository productRepository;
@@ -106,5 +112,20 @@ class ProductServiceTest {
         });
 
         assertTrue(exception.getMessage().contains("999"));
+    }
+
+    @Test
+    void testGetTopSendedProducts_DelegatesToRepository() {
+        int limit = 3;
+        List<TopSendedResponseDto> mockList = Collections.emptyList();
+
+        when(shippingItemRepository.findTopSendedProducts(org.springframework.data.domain.PageRequest.of(0, limit)))
+                .thenReturn(mockList);
+
+        List<TopSendedResponseDto> result = productService.getTopSendedProducts(limit);
+
+        assertNotNull(result);
+        assertSame(mockList, result);
+        verify(shippingItemRepository, times(1)).findTopSendedProducts(any());
     }
 }
