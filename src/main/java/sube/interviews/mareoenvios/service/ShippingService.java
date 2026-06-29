@@ -93,7 +93,7 @@ public class ShippingService {
     }
 
     @Transactional
-    @Retry(name = "shippingRetry", fallbackMethod = "transitionToFallback")
+    @Retry(name = "shippingRetry")
     @CacheEvict(value = "shippings", key = "#shippingId")
     public ShippingResponseDto transitionTo(Integer shippingId, ShippingState targetState) {
         log.info("Iniciando transición del envío ID: {} hacia el estado: {}", shippingId, targetState.name());

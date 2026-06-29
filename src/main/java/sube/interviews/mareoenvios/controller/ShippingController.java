@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -44,7 +45,7 @@ public class ShippingController {
     public ResponseEntity<Page<ShippingResponseDto>> getShippingsBySendDate(
             @PathVariable LocalDate sendDateFrom,
             @PathVariable LocalDate sendDateTo,
-            @PageableDefault(size = 10, page = 0) Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10, page = 0) Pageable pageable) {
         return ResponseEntity.ok(shippingService.getShippingsBySendDate(sendDateFrom, sendDateTo, pageable));
     }
 
@@ -52,7 +53,7 @@ public class ShippingController {
     @Operation(summary = "Obtener envíos por estado paginado", description = "Busca envíos paginados según su estado (ej: Inicial, En camino, Entregado, Cancelado).")
     public ResponseEntity<Page<ShippingResponseDto>> getShippingsByState(
             @PathVariable String state,
-            @PageableDefault(size = 10, page = 0) Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10, page = 0) Pageable pageable) {
         return ResponseEntity.ok(shippingService.getShippingsByState(state, pageable));
     }
 
