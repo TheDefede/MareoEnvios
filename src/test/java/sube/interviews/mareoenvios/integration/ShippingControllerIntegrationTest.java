@@ -171,4 +171,124 @@ class ShippingControllerIntegrationTest {
                 .andExpect(jsonPath("$.message").value("Estado de envío no válido: estado_fantasma"));
     }
 
+    @Test
+    void testCompleteShippingStateFlow_AndImmutableFinalState() throws Exception {
+        Integer shippingId = 3;
+
+        mockMvc.perform(post("/shipping/transition/sendToMail/{shippingId}", shippingId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("Entregado al correo"))
+                .andExpect(jsonPath("$.arriveDate").isEmpty());
+
+        mockMvc.perform(post("/shipping/transition/inTravel/{shippingId}", shippingId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("En camino"))
+                .andExpect(jsonPath("$.arriveDate").isEmpty());
+
+        mockMvc.perform(post("/shipping/transition/delivered/{shippingId}", shippingId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("Entregado"))
+                .andExpect(jsonPath("$.arriveDate").isNotEmpty());
+
+        mockMvc.perform(post("/shipping/transition/cancelled/{shippingId}", shippingId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.message").value("No se puede transicionar el envío del estado [Entregado] al estado [Cancelado]"));
+    }
+
+    @Test
+    void testInvalidTransitions_FromInicial() throws Exception {
+        Integer shippingId = 3;
+
+        mockMvc.perform(post("/shipping/transition/inTravel/{shippingId}", shippingId))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("No se puede transicionar el envío del estado [Inicial] al estado [En camino]"));
+
+        mockMvc.perform(post("/shipping/transition/delivered/{shippingId}", shippingId))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("No se puede transicionar el envío del estado [Inicial] al estado [Entregado]"));
+    }
+
+    @Test
+    void testInvalidTransitions_FromEntregadoCorreo() throws Exception {
+        Integer shippingId = 3;
+        mockMvc.perform(post("/shipping/transition/sendToMail/{shippingId}", shippingId))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/shipping/transition/delivered/{shippingId}", shippingId))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("No se puede transicionar el envío del estado [Entregado al correo] al estado [Entregado]"));
+    }
+
+    @Test
+    void testInvalidTransitions_FromEnCamino() throws Exception {
+        Integer shippingId = 2;
+
+        mockMvc.perform(post("/shipping/transition/sendToMail/{shippingId}", shippingId))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("No se puede transicionar el envío del estado [En camino] al estado [Entregado al correo]"));
+
+        mockMvc.perform(post("/shipping/transition/cancelled/{shippingId}", shippingId))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("No se puede transicionar el envío del estado [En camino] al estado [Cancelado]"));
+    }
+
+    @Test
+    void testInvalidTransitions_FromFinalStates() throws Exception {
+        mockMvc.perform(post("/shipping/transition/inTravel/{shippingId}", 1))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("No se puede transicionar el envío del estado [Entregado] al estado [En camino]"));
+
+        mockMvc.perform(post("/shipping/transition/delivered/{shippingId}", 4))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("No se puede transicionar el envío del estado [Cancelado] al estado [Entregado]"));
+    }
+
+    @Test
+    void testCreateShipping_WithValidationErrors_Returns400BadRequest() throws Exception {
+        String invalidJsonPayload = """
+                {
+                  "customerId": 1,
+                  "products": []
+                }
+                """;
+
+        mockMvc.perform(post("/shipping/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidJsonPayload))
+                .andExpect(status().isBadRequest()) // 400 Bad Request
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Faltan campos obligatorios en la petición"));
+    }
+
+    @Test
+    void testTransitionTo_ShouldEvictShippingCache() throws Exception {
+        Integer shippingId = 3;
+
+        reset(shippingService);
+
+        mockMvc.perform(get("/shipping/info/{shippingId}", shippingId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("Inicial"));
+
+        mockMvc.perform(get("/shipping/info/{shippingId}", shippingId))
+                .andExpect(status().isOk());
+
+        verify(shippingService, times(1)).getShippingInfo(shippingId);
+
+        mockMvc.perform(post("/shipping/transition/sendToMail/{shippingId}", shippingId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("Entregado al correo"));
+
+        mockMvc.perform(get("/shipping/info/{shippingId}", shippingId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.state").value("Entregado al correo"));
+
+        verify(shippingService, times(2)).getShippingInfo(shippingId);
+    }
+
 }

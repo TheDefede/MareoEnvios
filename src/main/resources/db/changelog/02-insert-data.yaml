@@ -113,3 +113,17 @@ databaseChangeLog:
             sql: "SELECT setval('shipping_id_seq', (SELECT MAX(id) FROM shipping));"
         - sql:
             sql: "SELECT setval('shipping_item_id_seq', (SELECT MAX(id) FROM shipping_item));"
+
+  - changeSet:
+      id: 10-alter-sequences-h2
+      author: FedeMartinez
+      dbms: h2
+      changes:
+        - sql:
+            sql: "ALTER TABLE customer ALTER COLUMN id RESTART WITH 4;"
+        - sql:
+            sql: "ALTER TABLE product ALTER COLUMN id RESTART WITH 6;"
+        - sql:
+            sql: "ALTER TABLE shipping ALTER COLUMN id RESTART WITH 5;"
+        - sql:
+            sql: "ALTER TABLE shipping_item ALTER COLUMN id RESTART WITH 10;"
