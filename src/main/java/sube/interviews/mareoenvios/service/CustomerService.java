@@ -21,7 +21,7 @@ public class CustomerService {
 
     public CustomerDto getById(Integer id){
         Customer customer = customerRepository.fetchById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Customer con ID:%d no encontrado", id)));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Customer con ID: %d no encontrado", id)));
 
         return customerMapper.toDto(customer);
     }

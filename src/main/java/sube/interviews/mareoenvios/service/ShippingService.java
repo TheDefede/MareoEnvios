@@ -64,7 +64,7 @@ public class ShippingService {
     @Cacheable(value = "shippings", key = "#shippingId")
     public ShippingResponseDto getShippingInfo(Integer shippingId) {
         Shipping shipping = shippingRepository.findById(shippingId)
-                .orElseThrow(()-> new ResourceNotFoundException(String.format("Ship not found with ID: %d", shippingId)));
+                .orElseThrow(()-> new ResourceNotFoundException(String.format("Envío no encontrado con ID: %d", shippingId)));
 
         log.info("Find shipping with ID: {}", shippingId);
 

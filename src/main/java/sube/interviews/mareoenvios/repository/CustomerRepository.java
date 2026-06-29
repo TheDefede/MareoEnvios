@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
-    @Cacheable(value = "customers", key = "#id")
+    @Cacheable(value = "customers", key = "#id", unless="#result == null")
     default Optional<Customer> fetchById(Integer id) {
         return findById(id);
     }

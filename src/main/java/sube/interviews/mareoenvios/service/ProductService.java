@@ -51,7 +51,7 @@ public class ProductService {
                 .build();
     }
 
-    public List<TopSendedResponseDto> getTopSendedProducts() {
-        return shippingItemRepository.findTopSendedProducts(PageRequest.of(0, 3));
+    public List<TopSendedResponseDto> getTopSendedProducts(int limit) {
+        return shippingItemRepository.findTopSendedProducts(PageRequest.of(0, limit));
     }
 }

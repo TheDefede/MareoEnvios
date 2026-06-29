@@ -2,7 +2,6 @@ package sube.interviews.mareoenvios.strategy.customer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import sube.interviews.mareoenvios.dto.request.CreateShippingRequest;
 import sube.interviews.mareoenvios.entity.Customer;
@@ -25,6 +24,6 @@ public class CustomerAlreadyExistsStrategy implements CustomerResolutionStrategy
     public Customer resolve(CreateShippingRequest request) {
         log.info("Buscando cliente con ID: {}", request.getCustomerId());
         return customerRepository.fetchById(request.getCustomerId())
-                .orElseThrow(()->new ResourceNotFoundException(String.format("Cliente con ID:%d no encontrado", request.getCustomerId())));
+                .orElseThrow(()->new ResourceNotFoundException(String.format("Cliente con ID: %d no encontrado", request.getCustomerId())));
     }
 }
